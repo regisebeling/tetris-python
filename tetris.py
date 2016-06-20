@@ -39,6 +39,9 @@ class EventHandler(object):
         if symbol == pyglet.window.key.A:
             self.window.current_form.rotate_esq()
 
+    def __del__(self):
+        os.unlink(self.window)
+
         return True
 
 
@@ -53,10 +56,12 @@ class CarregaTextura(pyglet.sprite.Sprite):
         pyglet.sprite.Sprite.__init__(self, image, x, y, batch=batch, group= group)
 
 
+
 class Square(CarregaTextura):
     def __init__(self, batch, x, y, t, group):
         CarregaTextura.__init__(self, t, False, x, y, batch, group)
 
+    
 
 class Sqpos(object):
     def __init__(self, x, y):
@@ -81,8 +86,52 @@ class Sqpos(object):
     def get_active(self):
         return self.active
 
+#Classe abstrata
+class Tetra(object):
+    def __init__(self, squares, batch, group):
+		pass
+	
+    def set_squares(self, squares):
+		pass
+		
+    def set_batch(self, batch):
+		pass
 
-class Forma(object):
+    def set_group(self, group):
+		pass
+
+    def get_squares(self):
+        pass
+
+    def get_batch(self):
+        pass
+
+    def get_group(self):
+        pass
+
+    def moveEsquerda(self):
+        pass
+		
+    def moveDireita(self):
+        pass
+		
+    def moveBaixo(self):
+        pass
+		
+    def kill(self, square):
+        pass
+
+    def rotate_dir(self):
+        pass
+		
+    def rotate_esq(self):
+        pass
+		
+    def __del__(self):
+		pass
+
+#Hernaca nivel 2 - implementa interface Tetra		
+class Forma(Tetra):
 
     def __init__(self, squares, batch, group):
         self.set_squares(squares)
@@ -142,7 +191,7 @@ class Forma(object):
                 self.squares[i].set_active(0)
 
 
-    def rotate_dir(self):
+    def rotate_dir(self):#D
         px = self.squares[1].get_x()
         py = self.squares[2].get_y()
         newx = []
@@ -150,8 +199,9 @@ class Forma(object):
         count = 0
         for square in self.squares:
             oldx = square.get_x()
-            x = (square.get_y() + px - py)
-            y = (px + py - oldx - 20)
+            oldy = square.get_y()
+            x = (oldy + px - py)
+            y = (px + py - oldx)
             newx.append(x)
             newy.append(y)
 
@@ -165,7 +215,7 @@ class Forma(object):
                 square.set_y(newy[i])
                 i += 1
 
-    def rotate_esq(self):
+    def rotate_esq(self): #A
         px = self.squares[2].get_x()
         py = self.squares[3].get_y()
         newx = []
@@ -174,21 +224,26 @@ class Forma(object):
         for square in self.squares:
             oldx = square.get_x()
             oldy = square.get_y()
-            x = px + py - oldy - 20
-            y = oldx + py - px
+            x = (px + py - oldy)
+            y = (oldx + py - px)
             newx.append(x)
             newy.append(y)
 
-            if (matriz[y / 20][x / 20] != 1 and x/20 < COLUNAS and x/20 > 0 and y/20 > 0 and y/20 < LINHAS):
+            if (matriz[y / 20][x / 20] != 1 and x / 20 < COLUNAS and x / 20 > 0 and y / 20 > 0 and y / 20 < LINHAS):
                 count += 1
         if count == 4:
             i=0
             for square in self.squares:
                 square.set_x(newx[i])
-                square.y(newy[i])
+                square.set_y(newy[i])
                 i+=1
 
+    def __del__(self):
+		print "Desalocando Forma"
 
+		
+#Classes herdando classe Forma
+#Classe FormaO nao tem metodo destrutor (chama da classe Forma) e todas as outras tem. Entao, ela eh a unica que nao esta implementando o destrutor via polimorfismo por inclusao
 class FormaO(Forma):
 
     def __init__(self, batch, group):
@@ -206,6 +261,8 @@ class FormaO(Forma):
             if square.active == 1:
                 listsq.append(Square(batch = self.get_batch(), x = square.get_x(), y = square.get_y(), t = 'bluesq.png', group=self.get_group()))
 
+    			
+				
 class FormaS(Forma):
 
     def __init__(self, batch, group):
@@ -223,6 +280,10 @@ class FormaS(Forma):
             if square.active == 1:
                 listsq.append(Square(batch = self.get_batch(), x = square.get_x(), y = square.get_y(), t = 'orangesq.png', group=self.get_group()))
 
+    def __del__(self):
+        print "Desalocando tetra S"
+				
+				
 class FormaZ(Forma):
 
     def __init__(self, batch, group):
@@ -240,6 +301,10 @@ class FormaZ(Forma):
             if square.active == 1:
                 listsq.append(Square(batch = self.get_batch(), x = square.get_x(), y = square.get_y(), t = 'yellowsq.png', group= self.get_group()))
 
+				
+    def __del__(self):
+        print "Desalocando tetra Z"
+				
 
 class FormaT(Forma):
 
@@ -258,6 +323,10 @@ class FormaT(Forma):
             if square.active == 1:
                 listsq.append(Square(batch = self.get_batch(), x = square.get_x(), y = square.get_y(), t = 'greensq.png', group = self.get_group()))
 
+    def __del__(self):
+        print "Desalocando tetra T"
+
+				
 class FormaI(Forma):
 
     def __init__(self, batch, group):
@@ -275,6 +344,10 @@ class FormaI(Forma):
             if square.active == 1:
                 listsq.append(Square(batch = self.get_batch(), x = square.get_x(), y = square.get_y(), t = 'redsq.png', group = self.get_group()))
 
+    def __del__(self):
+        print "Desalocando tetra I"
+				
+				
 class FormaL(Forma):
 
     def __init__(self, batch, group):
@@ -292,7 +365,10 @@ class FormaL(Forma):
             if square.active == 1:
                 listsq.append(Square(batch = self.get_batch(), x = square.get_x(), y = square.get_y(), t = 'lbluesq.png', group = self.get_group()))
 
+    def __del__(self):
+        print "Desalocando tetra L"
 
+				
 class FormaJ(Forma):
 
     def __init__(self, batch, group):
@@ -310,6 +386,8 @@ class FormaJ(Forma):
             if square.active == 1:
                 listsq.append(Square(batch = self.get_batch(), x = square.get_x(), y = square.get_y(), t = 'purplesq.png', group = self.get_group()))
 
+    def __del__(self):
+        print "Desalocando tetra J"
 
 
 
@@ -375,6 +453,7 @@ class Game(pyglet.window.Window):
                 new.append(0)
             matriz.append(new)
 
+	#Carrega uma peca random
     def random_form(self):
         i = random.randint(1, 7)
 
@@ -511,6 +590,7 @@ class Game(pyglet.window.Window):
             self.current_form.update()
             for forma in self.formas:
                 forma.update()
+            self.current_form.__del__()
 
 
 if __name__ == '__main__':
