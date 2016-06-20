@@ -33,14 +33,15 @@ class EventHandler(object):
         if symbol == pyglet.window.key.LEFT:
             self.window.current_form.moveEsquerda()
 
+        if symbol == pyglet.window.key.DOWN:
+            self.window.current_form.moveBaixo()
+						
         if symbol == pyglet.window.key.D:
             self.window.current_form.rotate_dir()
 
         if symbol == pyglet.window.key.A:
             self.window.current_form.rotate_esq()
 
-    def __del__(self):
-        os.unlink(self.window)
 
         return True
 
@@ -464,7 +465,7 @@ class Game(pyglet.window.Window):
         if i == 3:
             forma = FormaL(self.batch_draw, self.pieces)
         if i == 4:
-             forma = FormaI(self.batch_draw, self.pieces)
+            forma = FormaI(self.batch_draw, self.pieces)
         if i == 5:
             forma = FormaT(self.batch_draw, self.pieces)
         if i == 6:
